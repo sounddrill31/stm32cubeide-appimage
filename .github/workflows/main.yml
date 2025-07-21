@@ -55,7 +55,11 @@ jobs:
           export VERSION="$(cat current_version.txt)"
           export APP=$VERSION
 
+          echo "Creating AppImage for $APP on $ARCH"
+          # Prepare the AppDir structure(Already mostly done by setup_stm32cube.sh)
           mkdir -p AppDir/shared/lib
+          cp Custom_AppRun AppDir/AppRun
+          chmod +x AppDir/AppRun
 
           # Copy key system libraries that might not be auto-detected
           # Note: Be selective and only include necessary libraries

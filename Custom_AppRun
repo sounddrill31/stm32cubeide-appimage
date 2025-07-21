@@ -1,0 +1,101 @@
+#!/bin/bash
+set -e
+
+# ---
+# AppRun script for STM32CubeIDE AppImage
+#
+# Default behavior: Launches the IDE.
+# If "wayland" is in the arguments, it attempts to run the Wayland-specific binary.
+# Special flag --get-udev: Installs necessary udev rules for debug probes.
+# ---
+
+# 1. Determine the absolute path to the AppImage's root directory
+# This is the directory where this AppRun script is located.
+APPDIR=$(dirname "$(readlink -f "$0")")
+
+# --- Function to handle udev rule installation ---
+install_udev_rules() {
+    # The staged scripts are in AppDir/opt/st-scripts/
+    local scripts_dir="$APPDIR/opt/st-scripts"
+
+    # Check if the scripts directory exists
+    if [ ! -d "$scripts_dir" ]; then
+        echo "ERROR: Udev scripts directory not found at '$scripts_dir'." >&2
+        exit 1
+    fi
+
+    local udev_scripts=("$scripts_dir"/*-udev-rules-*.sh)
+
+    # Check if any udev rule scripts were found
+    if [ ! -e "${udev_scripts[0]}" ]; then
+        echo "No udev rule installation scripts found in '$scripts_dir'."
+        echo "Perhaps they are already installed or were not included in this package."
+        exit 0
+    fi
+
+    # "Fancy" output to guide the user
+    echo "================================================================"
+    echo " STM32CubeIDE Hardware Debugger Setup"
+    echo "================================================================"
+    echo
+    echo "This command will install system-wide udev rules required for"
+    echo "ST-Link and J-Link debug probes to be recognized by the system."
+    echo
+    echo "You will be prompted for your password as this requires sudo."
+    echo "----------------------------------------------------------------"
+
+    # Loop through and execute each udev installer
+    for script in "${udev_scripts[@]}"; do
+        if [ -f "$script" ]; then
+            echo
+            echo "-> Running installer: $(basename "$script")"
+            # We must use sudo to install system rules
+            sudo sh "$script"
+        fi
+    done
+
+    echo "----------------------------------------------------------------"
+    echo "✅ Udev rules installation process completed."
+    echo "You may need to unplug and reconnect your debug probe or run"
+    echo "'sudo udevadm control --reload-rules && sudo udevadm trigger'"
+    echo "for the changes to take effect immediately."
+    echo "================================================================"
+
+    exit 0
+}
+
+# --- Main Execution Logic ---
+
+# Check for the special flag as the first argument
+if [ "$1" == "--get-udev" ]; then
+    install_udev_rules
+fi
+
+# --- Default action: Launch the IDE ---
+
+# Determine which executable to run based on the command-line arguments.
+executable_name="stm32cubeide"
+for arg in "$@"; do
+    if [ "$arg" == "wayland" ]; then
+        echo "Wayland argument detected. Attempting to launch Wayland-specific version."
+        executable_name="stm32cubeide_wayland"
+        break # Found our keyword, no need to check further
+    fi
+done
+
+# Find the chosen executable. The glob (*) makes it robust against version changes.
+IDE_EXECUTABLE=$(find "$APPDIR/opt/st/" -name "$executable_name" -type f | head -n 1)
+
+if [ -z "$IDE_EXECUTABLE" ]; then
+    echo "FATAL: Could not find the required executable '$executable_name' within the AppImage." >&2
+    # If the wayland version was requested but not found, inform the user.
+    if [ "$executable_name" == "stm32cubeide_wayland" ]; then
+        echo "The Wayland-specific binary seems to be missing from this package." >&2
+    fi
+    exit 1
+fi
+
+echo "Launching: $(basename "$IDE_EXECUTABLE")"
+# Use exec to replace the shell process with the IDE process.
+# Pass all original command-line arguments ("$@") to the application.
+exec "$IDE_EXECUTABLE" "$@"
