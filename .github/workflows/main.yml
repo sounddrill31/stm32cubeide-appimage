@@ -41,7 +41,7 @@ jobs:
       run: |
         mkdir -p prebuilts
         cd prebuilts
-        wget $(cat current_link.txt)
+        wget $(cat ../current_link.txt)
 
     - name: Unzip prebuilt package
       run: |
