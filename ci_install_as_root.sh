@@ -46,6 +46,7 @@ if [ -n "$server_installer" ]; then
     # Use DESTDIR to redirect the installation into our AppDir prefix.
     # This ensures files that would go to /usr/bin go to AppDir/usr/bin instead.
     # The installer script itself is executed.
+    export LICENSE_ALREADY_ACCEPTED=1
     DESTDIR="$APPDIR_PREFIX" sh "$server_installer"
     echo "ST-Link Server installation complete."
 else
