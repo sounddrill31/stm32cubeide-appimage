@@ -23,10 +23,8 @@ bash $INPUT --tar xvf -C prebuilts/${VERSION}/extracted && (echo "Finished Extra
 echo "Installing STM32Cube files to temporary path..."
 (
 cp scripts/ci_*.sh prebuilts/${VERSION}/extracted/
-cd prebuilts/${VERSION}/extracted/
 echo "Running ci_install.sh to prepare the AppDir structure..."
-bash ci_install.sh --output-prefix AppDir
-cd ../../..
+bash prebuilts/${VERSION}/extracted/ci_install.sh --output-prefix AppDir
 )
 
 echo "STM32Cube environment setup complete."
