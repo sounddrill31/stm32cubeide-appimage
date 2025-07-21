@@ -49,6 +49,11 @@ jobs:
         mkdir -p AppDir # Appimage stuff goes here
         bash setup_stm32cube.sh prebuilts/${{ env.CURRENT_VERSION }}/${{ env.CURRENT_VERSION }}.sh AppDir
 
+    - name: Show AppDir contents pre-lib4bin
+      run: |
+        echo "Listing contents of AppDir:"
+        sudo tree AppDir
+
     - name: Create AppImage with Dependencies (Linux)
       run: |
           export ARCH="$(uname -m)"

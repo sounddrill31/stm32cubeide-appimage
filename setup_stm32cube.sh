@@ -29,5 +29,4 @@ bash ci_install.sh --output-prefix AppDir
 cd ../../..
 )
 
-echo "STM32Cube environment setup complete. Showing AppDir structure:"
-sudo tree AppDir
+echo "STM32Cube environment setup complete."
