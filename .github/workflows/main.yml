@@ -100,5 +100,14 @@ jobs:
 
           # List the generated AppImage
           ls -l *.AppImage
-    #- name: Create Release
 
+    - name: Upload Release Asset (Linux/AppImage)
+      if: runner.os == 'linux'
+      uses: softprops/action-gh-release@v1
+      with:
+        target_commitish: ${{ github.ref_name }}
+        files: st-stm32cubeide*.AppImage
+        name: STM32CubeIDE
+        tag_name: ${{ github.run_id }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
