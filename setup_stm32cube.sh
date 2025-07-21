@@ -22,5 +22,9 @@ mkdir -p prebuilts/${VERSION}/extracted
 bash $INPUT --tar xvf -C prebuilts/${VERSION}/extracted && (echo "Finished Extracting! Showing Extracted Files"; tree prebuilts/${VERSION}/extracted) # We know the script has a tarball and a self-extracting command
 
 
-# echo "Installing STM32Cube files to temporary path..."
+echo "Installing STM32Cube files to temporary path..."
+cp ci_*.sh prebuilts/${VERSION}/extracted/
+echo "Running ci_install.sh to prepare the AppDir structure..."
+bash ci_install.sh --output-prefix AppDir
+
 # echo "STM32Cube environment setup complete."
