@@ -2,6 +2,9 @@ name: STM32Cube Setup
 
 on:
   workflow_dispatch: # Manual trigger
+  push:
+    branches:
+      - main
 
 jobs:
   stm32cube-setup:
