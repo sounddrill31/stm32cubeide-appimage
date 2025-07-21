@@ -1,0 +1,43 @@
+name: STM32Cube Setup
+
+on:
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  stm32cube-setup:
+    runs-on: ubuntu-latest
+    env:
+      MAIN_BRANCH: 'main'
+
+    steps:
+
+    - name: Checkout main branch
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ env.MAIN_BRANCH }}
+        path: '.'
+
+    - name: Read current version
+      id: version
+      run: |
+        version=$(cat current_version.txt)
+        echo "CURRENT_VERSION=$version" >> $GITHUB_ENV
+
+
+    - name: Checkout prebuilts branch
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ env.CURRENT_VERSION }}
+        path: prebuilts
+
+
+    - name: Unzip prebuilt package
+      run: |
+        mkdir -p prebuilts/${{ env.CURRENT_VERSION }}
+        unzip prebuilts/${{ env.CURRENT_VERSION }}.sh.zip -d prebuilts/${{ env.CURRENT_VERSION }}
+
+
+    - name: Run setup STM32Cube script
+      run: |
+        chmod +x setup_stm32cube.sh
+        bash setup_stm32cube.sh prebuilts/${{ env.CURRENT_VERSION }}/${{ env.CURRENT_VERSION }}.sh
