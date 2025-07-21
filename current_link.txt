@@ -1,0 +1,1 @@
+https://media.githubusercontent.com/media/sounddrill31/stm32cubeide-appimage/refs/heads/st-stm32cubeide_1.19.0_25607_20250703_0907_amd64/st-stm32cubeide_1.19.0_25607_20250703_0907_amd64.sh.zip?download=true
