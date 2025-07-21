@@ -29,4 +29,6 @@ cd prebuilts/${VERSION}/extracted/
 echo "Running ci_install.sh to prepare the AppDir structure..."
 bash ci_install.sh --output-prefix AppDir
 )
-# echo "STM32Cube environment setup complete."
+
+echo "STM32Cube environment setup complete. Showing AppDir structure:"
+tree AppDir
