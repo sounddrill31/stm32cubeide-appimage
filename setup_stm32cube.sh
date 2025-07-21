@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 
 # Dummy script for now, just shows the files in the input directory
+md5sum $0
 INPUT_PATH=$(dirname $(readlink -f $0))
 
 echo "Setting up STM32Cube environment..."

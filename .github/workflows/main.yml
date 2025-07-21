@@ -10,6 +10,10 @@ jobs:
       MAIN_BRANCH: 'main'
 
     steps:
+    - name: Install Deps
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y p7zip-full
 
     - name: Checkout main branch
       uses: actions/checkout@v4
@@ -33,9 +37,11 @@ jobs:
 
     - name: Unzip prebuilt package
       run: |
+        md5sum prebuilts/${{ env.CURRENT_VERSION }}.sh.zip | awk '{print $1}' > prebuilts/${{ env.CURRENT_VERSION }}.sh.zip.md5
         mkdir -p prebuilts/${{ env.CURRENT_VERSION }}
-        unzip prebuilts/${{ env.CURRENT_VERSION }}.sh.zip -d prebuilts/${{ env.CURRENT_VERSION }}
-
+        
+        # Use 7z to extract the archive. The -o flag specifies the output directory.
+        7z x prebuilts/${{ env.CURRENT_VERSION }}.sh.zip -oprebuilts/${{ env.CURRENT_VERSION }}
 
     - name: Run setup STM32Cube script
       run: |
