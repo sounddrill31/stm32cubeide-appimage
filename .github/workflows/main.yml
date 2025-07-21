@@ -46,4 +46,8 @@ jobs:
     - name: Run setup STM32Cube script
       run: |
         chmod +x setup_stm32cube.sh
-        bash setup_stm32cube.sh prebuilts/${{ env.CURRENT_VERSION }}/${{ env.CURRENT_VERSION }}.sh
+        mkdir -p AppDir # Appimage stuff goes here
+        bash setup_stm32cube.sh prebuilts/${{ env.CURRENT_VERSION }}/${{ env.CURRENT_VERSION }}.sh AppDir
+    #- name: Create AppImage
+    #- name: Create Release
+
