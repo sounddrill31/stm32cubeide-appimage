@@ -43,11 +43,50 @@ jobs:
         # Use 7z to extract the archive. The -o flag specifies the output directory.
         7z x prebuilts/${{ env.CURRENT_VERSION }}.sh.zip -oprebuilts/${{ env.CURRENT_VERSION }}
 
-    - name: Run setup STM32Cube script
+    - name: Run setup_STM32Cube script
       run: |
         chmod +x setup_stm32cube.sh
         mkdir -p AppDir # Appimage stuff goes here
         bash setup_stm32cube.sh prebuilts/${{ env.CURRENT_VERSION }}/${{ env.CURRENT_VERSION }}.sh AppDir
-    #- name: Create AppImage
+
+    - name: Create AppImage with Dependencies (Linux)
+      run: |
+          export ARCH="$(uname -m)"
+          export VERSION="$(cat current_version.txt)"
+          export APP=$VERSION
+
+          mkdir -p AppDir/shared/lib
+
+          # Copy key system libraries that might not be auto-detected
+          # Note: Be selective and only include necessary libraries
+          cp /usr/lib/$ARCH-linux-gnu/libudev.so.1     AppDir/shared/lib/
+          cp /usr/lib/$ARCH-linux-gnu/libusb-1.0.so.0  AppDir/shared/lib/
+
+          ( export ARCH="$(uname -m)" # Just to be double sure
+            cd AppDir
+            wget "https://raw.githubusercontent.com/VHSgunzo/sharun/refs/heads/main/lib4bin" -O ./lib4bin
+            chmod +x ./lib4bin
+            xvfb-run -a -- ./lib4bin -p -v -e -k -w \
+              opt/st/stm32cubeide_*/stm32cubeide \
+              /usr/lib/$ARCH-linux-gnu/libvulkan* \
+              /usr/lib/$ARCH-linux-gnu/libEGL* \
+              /usr/lib/$ARCH-linux-gnu/libgallium-* \
+              /usr/lib/$ARCH-linux-gnu/dri/*
+
+            # ln ./sharun ./AppRun 
+            ./sharun -g
+          )
+
+          wget "https://github.com/VHSgunzo/uruntime/releases/latest/download/uruntime-appimage-dwarfs-$ARCH" -O uruntime
+          chmod +x ./uruntime
+          ./uruntime --appimage-mkdwarfs -f \
+          	--set-owner 0 --set-group 0 \
+          	--no-history --no-create-timestamp \
+          	--compression zstd:level=22 -S26 -B32 \
+          	--header uruntime \
+          	-i ./AppDir -o "$APP"-anylinux-"$ARCH".AppImage
+
+          # List the generated AppImage
+          ls -l *.AppImage
     #- name: Create Release
 
