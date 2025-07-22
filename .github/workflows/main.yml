@@ -17,6 +17,9 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y p7zip-full wget
+        sudo apt-get install -y libcanberra-gtk3-module librsvg2-common || true
+        sudo apt-get install -y libgtk-3-dev libgdk-pixbuf2.0-dev || true
+        sudo gdk-pixbuf-query-loaders --update-cache || true
 
     - name: Checkout main branch
       uses: actions/checkout@v4
