@@ -92,6 +92,12 @@ jobs:
 
             # ln ./sharun ./AppRun 
             ./sharun -g
+
+            # the binary needs this symlink to find its libraries
+            ln -sr ./opt/st/stm32cubeide*/* ./bin/
+
+            # remove pointless script since functionality is in the AppRun
+            rm -f ./bin/stm32cubeide_wayland
           )
 
           wget "https://github.com/VHSgunzo/uruntime/releases/latest/download/uruntime-appimage-dwarfs-$ARCH" -O uruntime
@@ -99,7 +105,7 @@ jobs:
           ./uruntime --appimage-mkdwarfs -f \
           	--set-owner 0 --set-group 0 \
           	--no-history --no-create-timestamp \
-          	--compression zstd:level=22 -S26 -B32 \
+          	--compression zstd:level=22 -S26 -B8 \
           	--header uruntime \
           	-i ./AppDir -o "$APP"-anylinux-"$ARCH".AppImage
 
