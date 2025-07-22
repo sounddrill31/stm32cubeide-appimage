@@ -94,7 +94,7 @@ jobs:
             ./sharun -g
 
             # the binary needs this symlink to find its libraries
-            ln -sr ./opt/st/stm32cubeide*/* ./bin/
+            ln -sr ./opt/st/stm32cubeide*/* ./bin/ || true
 
             # remove pointless script since functionality is in the AppRun
             rm -f ./bin/stm32cubeide_wayland
