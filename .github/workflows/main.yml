@@ -82,8 +82,13 @@ jobs:
           cp /usr/lib/$ARCH-linux-gnu/libudev.so.1     AppDir/shared/lib/
           cp /usr/lib/$ARCH-linux-gnu/libusb-1.0.so.0  AppDir/shared/lib/
 
-          ( export ARCH="$(uname -m)" # Just to be double sure
+          (
             cd AppDir
+
+            cp -v ./usr/share/applications/st-stm32cubeide*.desktop ./
+            cp -v ./opt/st/stm32cubeide*/icon.xpm  ./
+            cp -v ./opt/st/stm32cubeide*/icon.xpm  ./.DirIcon
+
             wget "https://raw.githubusercontent.com/VHSgunzo/sharun/refs/heads/main/lib4bin" -O ./lib4bin
             chmod +x ./lib4bin
             xvfb-run -a -- ./lib4bin -p -v -e -k -w \
@@ -93,8 +98,17 @@ jobs:
               /usr/lib/$ARCH-linux-gnu/libgallium-* \
               /usr/lib/$ARCH-linux-gnu/dri/*
 
-            # ln ./sharun ./AppRun 
             ./sharun -g
+
+            # deploy all bundled binaries
+            echo "Sharunning the plugins..."
+            bins_to_find="$(find ./opt/st/stm32cubeide*/plugins -type f -executable -exec file {} \; \
+              | grep -i 'elf.*executable' | awk -F':' '{print $1}' 
+            )"
+            for plugin in $bins_to_find; do
+              mv -v "$plugin" ./shared/bin && ln ./sharun "$plugin"
+              echo "Sharan $plugin"
+            done
 
             # the binary needs this symlink to find its libraries
             ln -sr ./opt/st/stm32cubeide*/* ./bin/ || true
