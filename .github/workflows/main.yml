@@ -93,6 +93,7 @@ jobs:
             chmod +x ./lib4bin
             xvfb-run -a -- ./lib4bin -p -v -e -k -w \
               opt/st/stm32cubeide_*/stm32cubeide \
+              /usr/lib/$ARCH-linux-gnu/gdk-pixbuf-*/*/*/libpixbufloader* \
               /usr/lib/$ARCH-linux-gnu/libvulkan* \
               /usr/lib/$ARCH-linux-gnu/libEGL* \
               /usr/lib/$ARCH-linux-gnu/libgallium-* \
